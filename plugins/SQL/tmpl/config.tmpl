@@ -1,0 +1,91 @@
+<script type="text/javascript">
+var sql_num_conn = <TMPL_VAR NAME=CONNECTION_COUNT>;
+
+function sql_add_connection() {
+    sql_num_conn++;
+    var html = "<td><input type=\"text\" name=\"conn_name_" + sql_num_conn + "\" style=\"width: 100%\" /></td>"
+        + "<td><input type=\"text\" id=\"conn_dsn_" + sql_num_conn + "\" name=\"conn_dsn_" + sql_num_conn + "\" style=\"width: 100%\" /></td>"
+        + "<td><input type=\"text\" name=\"conn_username_" + sql_num_conn + "\" style=\"width: 100%\" /></td>"
+        + "<td><input type=\"password\" name=\"conn_password_" + sql_num_conn + "\" style=\"width: 100%\" /></td>"
+        + "<td><a href=\"#\" onclick=\"return sql_remove_connection(" + sql_num_conn + ")\"><img src=\"<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/delete.gif\" width=\"9\" height=\"11\" alt=\"<MT_TRANS phrase="Delete">\" /></a>";
+    var tbl = getByID("sql_connection_table");
+    var tr = document.createElement("tr");
+    tr.innerHTML = html;
+    tr.id = "sql_connection-" + sql_num_conn;
+    tbl.appendChild(tr);
+    var name = getByID("conn_name_" + sql_num_conn);
+    if (name) name.focus();
+}
+function sql_remove_connection(num) {
+    var tr = getByID("sql_connection-" + num);
+    if (tr) {
+        var dsn = getByID("conn_dsn_" + num);
+        dsn.value = "";
+        TC.addClassName(tr, "hidden");
+    }
+    return false;
+}
+</script>
+
+<p>
+You can define named database connections here. Supply a unique name,
+a Perl DBI-based 'DSN' (data source name), username and password to
+define a connection. Please refer to the documentation for the
+database drivers for examples of valid DSNs: <a target="_blank" href="http://search.cpan.org/~capttofu/DBD-mysql/lib/DBD/mysql.pm">MySQL</a>,
+<a target="_blank" href="http://search.cpan.org/~dbdpg/DBD-Pg/Pg.pm">PostgreSQL</a>,
+<a target="_blank" href="http://search.cpan.org/~msergeant/DBD-SQLite/lib/DBD/SQLite.pm">SQLite</a>,
+<a target="_blank" href="http://search.cpan.org/~pythian/DBD-Oracle/Oracle.pm">Oracle</a>,
+<a target="_blank" href="http://search.cpan.org/~jurl/DBD-ODBC/ODBC.pm">ODBC</a>,
+<a target="_blank" href="http://search.cpan.org/~darren/DBD-Google/lib/DBD/Google.pm">Google</a>.
+</p>
+
+<TMPL_IF NAME=SCOPE_SYSTEM>
+<div class="setting">
+    <div class="label">
+        <label for="sql_admin_restrict">Restrict to Administrators Only?</label>
+    </div>
+    <div class="field">
+        <input id="sql_admin_restrict" type="checkbox" name="admin_restrict" <TMPL_IF NAME=ADMIN_RESTRICT>checked="checked"</TMPL_IF> value="1" />
+        <p>Check this field if you want to only permit system administrators
+        to use the SQL tags in templates.</p>
+    </div>
+</div>
+</TMPL_IF>
+
+<div class="setting">
+    <div style="text-align: right">
+        <input type="button" value="Add" onclick="sql_add_connection()" />
+    </div>
+    <div class="list">
+    <table cellspacing="0" id="sql_connection_table" width="100%">
+    <tr>
+        <th width="20%">Name</th>
+        <th width="39%">DSN</th>
+        <th width="20%">Username</th>
+        <th width="20%">Password</th>
+        <th width="9">&nbsp;</th>
+    </tr>
+    <TMPL_LOOP NAME=CONNECTION_LOOP>
+    <tr id="sql_connection-<TMPL_VAR NAME=NUM>">
+        <td><input name="conn_name_<TMPL_VAR NAME=NUM>" type="text" value="<TMPL_VAR NAME=NAME>" style="width: 100%" /></td>
+        <td><input id="conn_dsn_<TMPL_VAR NAME=NUM>" name="conn_dsn_<TMPL_VAR NAME=NUM>"  type="text" value="<TMPL_VAR NAME=DSN ESCAPE=HTML>" style="width: 100%" /></td>
+        <td><input name="conn_username_<TMPL_VAR NAME=NUM>" type="text" value="<TMPL_VAR NAME=USERNAME>" style="width: 100%" /></td>
+        <td><input name="conn_password_<TMPL_VAR NAME=NUM>" type="password" value="<TMPL_VAR NAME=PASSWORD>" style="width: 100%" /></td>
+        <td><a href="#" onclick="return sql_remove_connection(<TMPL_VAR NAME=NUM>); return false;"><img src="<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/delete.gif" width="9" height="11" alt="<MT_TRANS phrase="Delete">" /></a></td>
+    </tr>
+    </TMPL_LOOP>
+    </table>
+    </div>
+</div>
+
+<p>
+Note you do not have to create named connections to utilize the database
+connection you use for your MT database. This one is used by default. But
+you can use named connections to pull data from any installed DBD-driver and
+database. These named connections are meant mostly for the <code>&lt;MTSQL&gt;</code> tag.
+The other MT-object oriented tags (such as <code>&lt;MTSQLEntries&gt;</code>) will
+always pull the actual MT objects from your MT installation, not from the
+database identified by the named connection. Also note that you may use
+DBI drivers that MT doesn't support itself (such as the DBI driver for doing
+Google queries I've referred to).
+</p>
