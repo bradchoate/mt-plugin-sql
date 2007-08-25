@@ -1,4 +1,5 @@
-2.0 - Added configuration screen and restriction field. New documentation.
+2.0 - Rewritten to support MT 4.0 during the Six Apart Hack-a-thon sponsored
+    by SAKK. Added SQLPages, SQLFolders tags.
 
 1.6 - Added 'MTBlogs' tag.
 

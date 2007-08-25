@@ -1,5 +1,6 @@
 <script type="text/javascript">
-var sql_num_conn = <TMPL_VAR NAME=CONNECTION_COUNT>;
+<!--
+var sql_num_conn = <mt:var name="connection_count">;
 
 function sql_add_connection() {
     sql_num_conn++;
@@ -7,7 +8,7 @@ function sql_add_connection() {
         + "<td><input type=\"text\" id=\"conn_dsn_" + sql_num_conn + "\" name=\"conn_dsn_" + sql_num_conn + "\" style=\"width: 100%\" /></td>"
         + "<td><input type=\"text\" name=\"conn_username_" + sql_num_conn + "\" style=\"width: 100%\" /></td>"
         + "<td><input type=\"password\" name=\"conn_password_" + sql_num_conn + "\" style=\"width: 100%\" /></td>"
-        + "<td><a href=\"#\" onclick=\"return sql_remove_connection(" + sql_num_conn + ")\"><img src=\"<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/delete.gif\" width=\"9\" height=\"11\" alt=\"<MT_TRANS phrase="Delete">\" /></a>";
+        + "<td><a href=\"#\" onclick=\"return sql_remove_connection(" + sql_num_conn + ")\"><img src=\"<mt:var name="static_uri">images/nav_icons/mini/delete.gif\" width=\"9\" height=\"11\" alt=\"<MT_TRANS phrase="Delete">\" /></a>";
     var tbl = getByID("sql_connection_table");
     var tr = document.createElement("tr");
     tr.innerHTML = html;
@@ -25,6 +26,7 @@ function sql_remove_connection(num) {
     }
     return false;
 }
+// -->
 </script>
 
 <p>
@@ -39,25 +41,24 @@ database drivers for examples of valid DSNs: <a target="_blank" href="http://sea
 <a target="_blank" href="http://search.cpan.org/~darren/DBD-Google/lib/DBD/Google.pm">Google</a>.
 </p>
 
-<TMPL_IF NAME=SCOPE_SYSTEM>
-<div class="setting">
-    <div class="label">
-        <label for="sql_admin_restrict">Restrict to Administrators Only?</label>
-    </div>
-    <div class="field">
-        <input id="sql_admin_restrict" type="checkbox" name="admin_restrict" <TMPL_IF NAME=ADMIN_RESTRICT>checked="checked"</TMPL_IF> value="1" />
-        <p>Check this field if you want to only permit system administrators
-        to use the SQL tags in templates.</p>
-    </div>
-</div>
-</TMPL_IF>
+<mt:if name="scope_system">
+<mtapp:setting id="sql_plugin_restrict" label="Restrict to Administrators"
+    hint="Check this field if you want to only permit system administrators to use the SQL tags in templates." show_hint="1"">
+    <input id="sql_admin_restrict" type="checkbox" name="admin_restrict" <mt:if name="admin_restrict">checked="checked"</mt:if> value="1" />
+</mtapp:setting>
+</mt:if>
 
-<div class="setting">
-    <div style="text-align: right">
-        <input type="button" value="Add" onclick="sql_add_connection()" />
+<mtapp:settinggroup id="sql_plugin_connections">
+    <div id="actions-bar-top" class="actions-bar actions-bar-top">
+        <div class="actions-bar-inner pkg">
+            <span class="button-actions actions">
+                <a href="javascript:void(0)" onclick="sql_add_connection()">Add</a>
+            </span>
+        </div>
     </div>
-    <div class="list">
+    <div class="listing">
     <table cellspacing="0" id="sql_connection_table" width="100%">
+    <thead>
     <tr>
         <th width="20%">Name</th>
         <th width="39%">DSN</th>
@@ -65,18 +66,21 @@ database drivers for examples of valid DSNs: <a target="_blank" href="http://sea
         <th width="20%">Password</th>
         <th width="9">&nbsp;</th>
     </tr>
-    <TMPL_LOOP NAME=CONNECTION_LOOP>
-    <tr id="sql_connection-<TMPL_VAR NAME=NUM>">
-        <td><input name="conn_name_<TMPL_VAR NAME=NUM>" type="text" value="<TMPL_VAR NAME=NAME>" style="width: 100%" /></td>
-        <td><input id="conn_dsn_<TMPL_VAR NAME=NUM>" name="conn_dsn_<TMPL_VAR NAME=NUM>"  type="text" value="<TMPL_VAR NAME=DSN ESCAPE=HTML>" style="width: 100%" /></td>
-        <td><input name="conn_username_<TMPL_VAR NAME=NUM>" type="text" value="<TMPL_VAR NAME=USERNAME>" style="width: 100%" /></td>
-        <td><input name="conn_password_<TMPL_VAR NAME=NUM>" type="password" value="<TMPL_VAR NAME=PASSWORD>" style="width: 100%" /></td>
-        <td><a href="#" onclick="return sql_remove_connection(<TMPL_VAR NAME=NUM>); return false;"><img src="<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/delete.gif" width="9" height="11" alt="<MT_TRANS phrase="Delete">" /></a></td>
+    </thead>
+    <tbody>
+    <mt:loop name="connection_loop">
+    <tr id="sql_connection-<mt:var name="num">">
+        <td><input name="conn_name_<mt:var name="num">" type="text" value="<mt:var name="name">" style="width: 100%" /></td>
+        <td><input id="conn_dsn_<mt:var name="num">" name="conn_dsn_<mt:var name="num">"  type="text" value="<mt:var name="dsn" escape="html">" style="width: 100%" /></td>
+        <td><input name="conn_username_<mt:var name="num">" type="text" value="<mt:var name="username">" style="width: 100%" /></td>
+        <td><input name="conn_password_<mt:var name="num">" type="password" value="<mt:var name="password">" style="width: 100%" /></td>
+        <td><a href="#" onclick="return sql_remove_connection(<mt:var name="num">); return false;"><img src="<mt:var name="static_uri">images/nav_icons/mini/delete.gif" width="9" height="11" alt="<MT_TRANS phrase="Delete">" /></a></td>
     </tr>
-    </TMPL_LOOP>
+    </mt:loop>
+    </tbody>
     </table>
     </div>
-</div>
+</mtapp:settinggroup>
 
 <p>
 Note you do not have to create named connections to utilize the database

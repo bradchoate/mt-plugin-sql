@@ -28,7 +28,8 @@ GLOBAL ATTRIBUTES
     within your queries when populating the query with values from a MT tag.
     For instance:
 
-        <MTSQL query="select * from mt_author where author_nickname='[MTEntryAuthor quote_dbh='1']'">
+        <MTSQL query="select * from mt_author
+               where author_nickname='[MTEntryAuthor quote_sql='1']'">
 
     In the event that <MTEntryAuthor> contains quotes or other special
     characters, quote_dbh will escape these characters so the query is
@@ -160,6 +161,17 @@ TAGS
         The value you want to output in the event that no entries were
         selected.
 
+    Filters out non-entry records from the mt_entry table (where blog
+    entries and pages are stored). NOTE: If you are trying to query with
+    a 'LIMIT' clause, you should add the "entry_class='entry'" clause to
+    your query so you will limit your result set properly.
+
+  <MTSQLPages>
+    Similar to the SQLEntries tag; this is mostly an alias, but filters
+    out non-page records from the mt_entry table. NOTE: If you are trying
+    to query with a 'LIMIT' clause, you should add the "entry_class='page'"
+    clause to your query so you will limit your result set properly.
+
   <MTSQLComments>
     Lets you use a SQL query to fetch a selection of comments. One of the
     columns returned in this query should be named 'comment_id'. It will be
@@ -268,6 +280,7 @@ RECIPIES
            and entry_id = trackback_entry_id
            and tbping_tb_id = trackback_id
            and entry_status = 2
+           and entry_class = 'entry'
            and comment_visible = 1
            and tbping_visible = 1
          group by entry_id
@@ -297,6 +310,7 @@ RECIPIES
         select year(entry_created_on) y, count(*) c
            from mt_entry
           where entry_status = 2
+            and entry_class = 'entry'
             and entry_blog_id = 4
           group by year(entry_created_on)
           order by year(entry_created_on)
@@ -307,11 +321,11 @@ RECIPIES
 AVAILABILITY
     The latest release of this plugin can be found at this address:
 
-        http://code.sixapart.com/
+        http://code.sixapart.com/svn/mtplugins/trunk/SQL
 
 LICENSE
     This plugin is published under the Artistic License.
 
 AUTHOR & COPYRIGHT
-    Copyright 2002-2006, Brad Choate
+    Copyright 2002-2007, Brad Choate
 
